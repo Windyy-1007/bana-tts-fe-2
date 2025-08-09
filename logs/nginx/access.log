@@ -1,0 +1,8 @@
+172.18.0.1 - - [09/Aug/2025:12:54:04 +0000] "GET / HTTP/1.1" 502 552 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+172.18.0.1 - - [09/Aug/2025:12:54:07 +0000] "GET /favicon.ico HTTP/1.1" 502 552 "http://localhost/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+172.18.0.1 - - [09/Aug/2025:12:55:27 +0000] "GET / HTTP/1.1" 200 4597 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+172.18.0.1 - - [09/Aug/2025:12:55:27 +0000] "GET /style.css HTTP/1.1" 200 4593 "http://localhost/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+172.18.0.1 - - [09/Aug/2025:12:55:27 +0000] "GET /text_parser.js HTTP/1.1" 200 739 "http://localhost/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+172.18.0.1 - - [09/Aug/2025:12:55:27 +0000] "GET /ocr.js HTTP/1.1" 200 1766 "http://localhost/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+172.18.0.1 - - [09/Aug/2025:12:55:27 +0000] "GET /main.js HTTP/1.1" 200 15874 "http://localhost/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+172.18.0.1 - - [09/Aug/2025:12:55:27 +0000] "GET /favicon.ico HTTP/1.1" 404 207 "http://localhost/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"

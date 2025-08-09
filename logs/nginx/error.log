@@ -1,0 +1,2 @@
+2025/08/09 12:54:04 [error] 30#30: *2 connect() failed (113: Host is unreachable) while connecting to upstream, client: 172.18.0.1, server: localhost, request: "GET / HTTP/1.1", upstream: "http://172.18.0.2:5000/", host: "localhost"
+2025/08/09 12:54:07 [error] 30#30: *2 connect() failed (113: Host is unreachable) while connecting to upstream, client: 172.18.0.1, server: localhost, request: "GET /favicon.ico HTTP/1.1", upstream: "http://172.18.0.2:5000/favicon.ico", host: "localhost", referrer: "http://localhost/"
