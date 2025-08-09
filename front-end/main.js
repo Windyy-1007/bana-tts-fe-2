@@ -4,12 +4,12 @@ document.addEventListener('DOMContentLoaded', function () {
     // Language switching system - moved to top so it's available everywhere
     const translations = {
         vi: {
-            appTitle: 'Bahnar Chuyển Văn Bản Thành Giọng Nói',
+            appTitle: 'Tổng hợp tiếng nói Ba Na từ văn bản tiếng Ba Na',
             navText: 'Văn bản',
             navImage: 'Hình ảnh',
             navFile: 'Tệp tin',
             navAbout: 'Giới thiệu',
-            regionLabel: 'Vùng:',
+            regionLabel: 'Phương ngữ:',
             placeholderText: 'Nhập văn bản tại đây...',
             voiceMale: 'Nam',
             voiceFemale: 'Nữ',
@@ -23,7 +23,21 @@ document.addEventListener('DOMContentLoaded', function () {
             fileDropSubtext: 'Hỗ trợ tệp .txt, .docx',
             fileResult: 'Chọn hoặc thả tệp văn bản để trích xuất nội dung tự động',
             aboutTitle: 'Giới thiệu',
-            aboutText: 'Đây là ứng dụng chuyển đổi văn bản thành giọng nói tiếng Bahnar.',
+            developmentTeam: 'Đội ngũ phát triển',
+            developmentTeamText: 'Ứng dụng chuyển văn bản thành giọng nói tiếng Bahnar này được phát triển bởi nhóm <strong>URA - Unlimited Research group of AI</strong>, một nhóm nghiên cứu tiên tiến chuyên về công nghệ trí tuệ nhân tạo nhằm bảo tồn ngôn ngữ và nâng cao khả năng tiếp cận.',
+            projectLeadership: 'Lãnh đạo dự án',
+            projectLeadershipText: 'Dự án được dẫn dắt bởi <strong>PGS. TS. Quản Thành Thơ</strong>, Trưởng khoa Khoa học máy tính và Kỹ thuật máy tính tại Trường Đại học Bách Khoa, Đại học Quốc gia TP.HCM. Dưới sự hướng dẫn của thầy, nhóm URA đã tập trung phát triển các giải pháp AI sáng tạo, kết nối giữa ngôn ngữ truyền thống và công nghệ hiện đại.',
+            mission: 'Sứ mệnh',
+            missionText: 'Sứ mệnh của chúng tôi là bảo tồn và phát huy tiếng Bahnar thông qua công nghệ chuyển văn bản thành giọng nói tiên tiến. Bằng cách phát triển ứng dụng này, chúng tôi hướng tới:',
+            missionItem1: '<strong>Bảo tồn di sản văn hóa:</strong> Giúp duy trì di sản ngôn ngữ phong phú của người Bahnar',
+            missionItem2: '<strong>Nâng cao khả năng tiếp cận:</strong> Làm cho nội dung tiếng Bahnar dễ tiếp cận hơn thông qua chuyển đổi âm thanh',
+            missionItem3: '<strong>Hỗ trợ giáo dục:</strong> Cung cấp công cụ cho việc học ngôn ngữ và mục đích giáo dục',
+            missionItem4: '<strong>Thúc đẩy đổi mới:</strong> Phát triển nghiên cứu AI trong xử lý ngôn ngữ ít tài nguyên',
+            technicalExcellence: 'Xuất sắc kỹ thuật',
+            technicalExcellenceText: 'Ứng dụng thể hiện sự hội tụ của công nghệ web hiện đại, học máy và chuyên môn ngôn ngữ học, thể hiện cam kết của nhóm trong việc cung cấp các giải pháp chất lượng cao phục vụ cả tiến bộ công nghệ và bảo tồn văn hóa.',
+            university: 'Trường Đại học',
+            universityText: '<strong>Trường Đại học Bách Khoa</strong><br><strong>Đại học Quốc gia TP.HCM</strong>',
+            universityFooter: 'Để biết thêm thông tin về các hoạt động nghiên cứu và dự án của chúng tôi, vui lòng truy cập các kênh chính thức của trường.',
             historyTitle: 'Lịch sử phát âm',
             historyEmpty: 'Chưa có lịch sử phát âm. Tạo âm thanh để xem tại đây!',
             guideTitle: 'Hướng dẫn gõ tiếng Bahnar',
@@ -46,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function () {
             errorProcessingImage: 'Lỗi xử lý hình ảnh'
         },
         en: {
-            appTitle: 'Bahnar Text-To-Speech',
+            appTitle: 'Bahnar Text-to-Speech',
             navText: 'Text',
             navImage: 'Image',
             navFile: 'File',
@@ -65,7 +79,21 @@ document.addEventListener('DOMContentLoaded', function () {
             fileDropSubtext: 'Supports .txt, .docx files',
             fileResult: 'Select or drop a text file to extract content automatically',
             aboutTitle: 'About',
-            aboutText: 'This is a Bahnar Text-To-Speech application.',
+            developmentTeam: 'Development Team',
+            developmentTeamText: 'This Bahnar Text-to-Speech application was developed by <strong>URA - Unlimited Research group of AI</strong>, a cutting-edge research group dedicated to advancing artificial intelligence technologies for language preservation and accessibility.',
+            projectLeadership: 'Project Leadership',
+            projectLeadershipText: 'The project is led by <strong>Assoc. Prof. Dr. Quan Thanh Tho</strong>, Dean of the Faculty of Computer Science and Engineering at Ho Chi Minh City University of Technology (HCMUT), Vietnam National University Ho Chi Minh City (VNU-HCM). Under his guidance, the URA team has focused on developing innovative AI solutions that bridge the gap between traditional languages and modern technology.',
+            mission: 'Mission',
+            missionText: 'Our mission is to preserve and promote the Bahnar language through advanced text-to-speech technology. By developing this application, we aim to:',
+            missionItem1: '<strong>Preserve Cultural Heritage:</strong> Help maintain the rich linguistic heritage of the Bahnar people',
+            missionItem2: '<strong>Enhance Accessibility:</strong> Make Bahnar language content more accessible through audio conversion',
+            missionItem3: '<strong>Support Education:</strong> Provide tools for language learning and educational purposes',
+            missionItem4: '<strong>Foster Innovation:</strong> Advance AI research in under-resourced language processing',
+            technicalExcellence: 'Technical Excellence',
+            technicalExcellenceText: 'The application represents a convergence of modern web technologies, machine learning, and linguistic expertise, demonstrating the team\'s commitment to delivering high-quality solutions that serve both technological advancement and cultural preservation.',
+            university: 'University',
+            universityText: '<strong>Ho Chi Minh City University of Technology</strong><br><strong>Vietnam National University Ho Chi Minh City</strong>',
+            universityFooter: 'For more information about our research activities and projects, please visit our institution\'s official channels.',
             historyTitle: 'Speech History',
             historyEmpty: 'No speech history yet. Generate some audio to see it here!',
             guideTitle: 'Bahnar Typing Guide',
@@ -159,7 +187,39 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Update about section
         document.querySelector('#about-content .card-title').textContent = t.aboutTitle;
-        document.querySelector('#about-content p').textContent = t.aboutText;
+
+        // Update about section content
+        const aboutSections = document.querySelectorAll('#about-content .about-section');
+        if (aboutSections.length >= 5) {
+            aboutSections[0].querySelector('h3').textContent = t.developmentTeam;
+            aboutSections[0].querySelector('p').innerHTML = t.developmentTeamText;
+
+            aboutSections[1].querySelector('h3').textContent = t.projectLeadership;
+            aboutSections[1].querySelector('p').innerHTML = t.projectLeadershipText;
+
+            aboutSections[2].querySelector('h3').textContent = t.mission;
+            aboutSections[2].querySelector('p').innerHTML = t.missionText;
+
+            const missionList = aboutSections[2].querySelector('.mission-list');
+            if (missionList) {
+                missionList.innerHTML = `
+                    <li>${t.missionItem1}</li>
+                    <li>${t.missionItem2}</li>
+                    <li>${t.missionItem3}</li>
+                    <li>${t.missionItem4}</li>
+                `;
+            }
+
+            aboutSections[3].querySelector('h3').textContent = t.technicalExcellence;
+            aboutSections[3].querySelector('p').innerHTML = t.technicalExcellenceText;
+
+            aboutSections[4].querySelector('h3').textContent = t.university;
+            const universityPs = aboutSections[4].querySelectorAll('p');
+            if (universityPs.length >= 2) {
+                universityPs[0].innerHTML = t.universityText;
+                universityPs[1].innerHTML = t.universityFooter;
+            }
+        }
 
         // Update history panel
         document.querySelector('.history-panel-title').innerHTML = `

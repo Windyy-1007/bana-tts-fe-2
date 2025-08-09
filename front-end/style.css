@@ -915,3 +915,52 @@ body {
     padding: 12px;
   }
 }
+
+/* About page styling */
+.about-section {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e8e8e8;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.about-section h3 {
+  color: var(--color-main);
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.about-section p {
+  line-height: 1.6;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.about-section p:last-child {
+  margin-bottom: 0;
+}
+
+.mission-list {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0;
+}
+
+.mission-list li {
+  padding: 0.5rem 0;
+  line-height: 1.6;
+  color: #333;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.mission-list li:last-child {
+  border-bottom: none;
+}
+
+.mission-list strong {
+  color: var(--color-main);
+}
