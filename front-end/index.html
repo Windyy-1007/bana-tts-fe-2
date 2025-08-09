@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <title>Bahnar Text-To-Speech</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Tesseract.js with multiple CDN fallbacks -->
+  <script>
+    // Try loading Tesseract.js with fallback CDNs
+    (function () {
+      const cdns = [
+        'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js',
+        'https://unpkg.com/tesseract.js@5/dist/tesseract.min.js'
+      ];
+
+      let currentCdnIndex = 0;
+
+      function loadTesseract() {
+        if (currentCdnIndex >= cdns.length) {
+          console.error('All Tesseract.js CDNs failed to load');
+          return;
+        }
+
+        const script = document.createElement('script');
+        script.src = cdns[currentCdnIndex];
+        script.onload = function () {
+          console.log('✅ Tesseract.js loaded from:', cdns[currentCdnIndex]);
+        };
+        script.onerror = function () {
+          console.warn('❌ Failed to load Tesseract.js from:', cdns[currentCdnIndex]);
+          currentCdnIndex++;
+          loadTesseract();
+        };
+        document.head.appendChild(script);
+      }
+
+      loadTesseract();
+    })();
+  </script>
+  <style>
+    .spinner {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 2px solid #2563eb;
+      border-top: 2px solid #fff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      vertical-align: middle;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .tts-btn.disabled,
+    label.disabled {
+      pointer-events: none;
+      opacity: 0.6;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="headbar">
+    <div class="headbar-bg">
+      <span id="app-title">Bahnar Chuyển Văn Bản Thành Giọng Nói</span>
+    </div>
+    <select class="language-selector" id="lang-select">
+      <option value="vi">Tiếng Việt</option>
+      <option value="en">English</option>
+    </select>
+  </div>
+
+  <div class="container">
+    <div class="navigator-bar">
+      <button class="nav-btn active" id="tts-btn">Văn bản</button>
+      <button class="nav-btn" id="ocr-btn">Hình ảnh</button>
+      <button class="nav-btn" id="file-btn">Tệp tin</button>
+      <button class="nav-btn" id="about-btn">Giới thiệu</button>
+    </div>
+
+    <div class="content">
+      <div id="tts-content" class="content-section">
+        <!-- <div class="card-title">Text-to-Speech</div> -->
+
+        <!-- Region selector -->
+        <div class="region-selector-container">
+          <label class="region-selector-label">Vùng:</label>
+          <div class="region-selector">
+            <button class="region-option active" data-region="gialai">Gia Lai</button>
+            <button class="region-option" data-region="binhdinh">Bình Định</button>
+            <button class="region-option" data-region="kontum">Kon Tum</button>
+          </div>
+        </div>
+
+        <!-- Combined text input and result container -->
+        <div class="combined-input-container">
+          <div class="input-section">
+            <textarea id="text-input" placeholder="Nhập văn bản tại đây..."></textarea>
+            <div class="text-input-controls">
+              <select class="voice-selector" id="voice-select">
+                <option value="male">Nam</option>
+                <option value="female">Nữ</option>
+              </select>
+              <button id="speak-btn" class="tts-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M11 5L6 9H2V15H6L11 19V5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                  <path d="M19.07 4.93C20.9 6.76 20.9 9.24 19.07 11.07M15.54 8.46C16.47 9.39 16.47 10.61 15.54 11.54"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                Phát âm
+              </button>
+              <button id="history-btn" class="history-btn">Lịch sử</button>
+            </div>
+          </div>
+          <div class="result-section">
+            <div id="tts-result">Nhấp "Phát âm" để tạo âm thanh</div>
+          </div>
+        </div>
+
+        <!-- Bahnar Typing Guide -->
+        <div class="typing-guide">
+          <div class="guide-header">
+            <h3>Hướng dẫn gõ tiếng Bahnar</h3>
+            <button class="guide-toggle" id="guide-toggle">
+              <svg class="toggle-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+            </button>
+          </div>
+          <div class="guide-content" id="guide-content">
+            <div class="guide-section">
+              <h4>Ký tự đặc biệt:</h4>
+              <div class="char-examples">
+                <div class="char-group">
+                  <span class="char">ŭ</span> → u8, uu, u\
+                </div>
+                <div class="char-group">
+                  <span class="char">ĉ</span> → c6, cc, c\
+                </div>
+                <div class="char-group">
+                  <span class="char">ĕ</span> → e8, ew, e\
+                </div>
+                <div class="char-group">
+                  <span class="char">ĭ</span> → i8, iw, i\
+                </div>
+                <div class="char-group">
+                  <span class="char">ñ</span> → n4, nx, n\
+                </div>
+                <div class="char-group">
+                  <span class="char">ǒ</span> → o8, o\
+                </div>
+              </div>
+            </div>
+            <div class="guide-section">
+              <h4>Ký tự tiếng Việt:</h4>
+              <div class="char-examples">
+                <div class="char-group">
+                  <span class="char">ă</span> → aw, a8
+                </div>
+                <div class="char-group">
+                  <span class="char">â</span> → aa, a6
+                </div>
+                <div class="char-group">
+                  <span class="char">đ</span> → dd, d9
+                </div>
+                <div class="char-group">
+                  <span class="char">ê</span> → ee, e6
+                </div>
+                <div class="char-group">
+                  <span class="char">ô</span> → oo, o6
+                </div>
+                <div class="char-group">
+                  <span class="char">ơ</span> → ow, o7
+                </div>
+                <div class="char-group">
+                  <span class="char">ư</span> → uw, u7
+                </div>
+              </div>
+            </div>
+            <div class="guide-section">
+              <h4>Mẹo:</h4>
+              <ul class="tips-list">
+                <li>• Viết hoa hay thường đều được cho ký tự thứ 2 (Uu → Ŭ)</li>
+                <li>• Gõ lặp ký tự giống nhau để hủy (e66 → e6)</li>
+                <li>• Gõ tự nhiên - thay thế tự động ngay lập tức</li>
+                <li>• Tắt Unikey trên laptop/PC hoặc chuyển sang bàn phím tiếng Anh trên điện thoại</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="ocr-content" class="content-section hidden">
+        <!-- Region selector -->
+        <div class="region-selector-container">
+          <label class="region-selector-label">Vùng:</label>
+          <div class="region-selector">
+            <button class="region-option active" data-region="gialai">Gia Lai</button>
+            <button class="region-option" data-region="binhdinh">Bình Định</button>
+            <button class="region-option" data-region="kontum">Kon Tum</button>
+          </div>
+        </div>
+
+        <!-- Combined OCR input and result container -->
+        <div class="combined-input-container">
+          <div class="input-section">
+            <div id="ocr-drop-zone" class="drop-zone">
+              <div class="drop-zone-content">
+                <svg class="upload-icon" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                  xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M14.2 6L14.7 6.5L17.5 9.3C17.8 9.6 18 10 18 10.4V19C18 20.1 17.1 21 16 21H8C6.9 21 6 20.1 6 19V5C6 3.9 6.9 3 8 3H13.6C14 3 14.4 3.2 14.7 3.5L14.2 6Z"
+                    stroke="#1967D2" stroke-width="2" />
+                  <path d="M12 7V17M8 13L12 9L16 13" stroke="#1967D2" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
+                <p class="drop-zone-text">Kéo thả hình ảnh vào đây</p>
+                <p class="drop-zone-subtext">hoặc nhấp để chọn</p>
+              </div>
+              <input type="file" id="ocr-file-input" accept="image/*" class="file-input-hidden">
+            </div>
+            <div class="text-input-controls">
+              <select class="voice-selector" id="ocr-voice-select">
+                <option value="male">Nam</option>
+                <option value="female">Nữ</option>
+              </select>
+              <button id="ocr-speak-btn" class="tts-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M11 5L6 9H2V15H6L11 19V5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                  <path d="M19.07 4.93C20.9 6.76 20.9 9.24 19.07 11.07M15.54 8.46C16.47 9.39 16.47 10.61 15.54 11.54"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                Phát âm
+              </button>
+              <button id="ocr-history-btn" class="history-btn">Lịch sử</button>
+            </div>
+          </div>
+          <div class="result-section">
+            <div id="ocr-result">Chọn hoặc thả hình ảnh để trích xuất văn bản tự động</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="file-content" class="content-section hidden">
+        <!-- Region selector -->
+        <div class="region-selector-container">
+          <label class="region-selector-label">Vùng:</label>
+          <div class="region-selector">
+            <button class="region-option active" data-region="gialai">Gia Lai</button>
+            <button class="region-option" data-region="binhdinh">Bình Định</button>
+            <button class="region-option" data-region="kontum">Kon Tum</button>
+          </div>
+        </div>
+
+        <!-- Combined File input and result container -->
+        <div class="combined-input-container">
+          <div class="input-section">
+            <div id="file-drop-zone" class="drop-zone">
+              <div class="drop-zone-content">
+                <svg class="upload-icon" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                  xmlns="http://www.w3.org/2000/svg">
+                  <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="#1967D2" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
+                <p class="drop-zone-text">Kéo thả tệp văn bản vào đây</p>
+                <p class="drop-zone-subtext">Hỗ trợ tệp .txt, .docx</p>
+              </div>
+              <input type="file" id="file-file-input" accept=".txt,.docx" class="file-input-hidden">
+            </div>
+            <div class="text-input-controls">
+              <select class="voice-selector" id="file-voice-select">
+                <option value="male">Nam</option>
+                <option value="female">Nữ</option>
+              </select>
+              <button id="file-speak-btn" class="tts-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M11 5L6 9H2V15H6L11 19V5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                  <path d="M19.07 4.93C20.9 6.76 20.9 9.24 19.07 11.07M15.54 8.46C16.47 9.39 16.47 10.61 15.54 11.54"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                Phát âm
+              </button>
+              <button id="file-history-btn" class="history-btn">Lịch sử</button>
+            </div>
+          </div>
+          <div class="result-section">
+            <div id="file-result">Chọn hoặc thả tệp văn bản để trích xuất nội dung tự động</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="about-content" class="content-section hidden">
+        <div class="card-title">Giới thiệu</div>
+        <p>Đây là ứng dụng chuyển đổi văn bản thành giọng nói tiếng Bahnar.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- History Panel -->
+  <div class="history-panel" id="history-panel">
+    <div class="history-panel-header">
+      <h3 class="history-panel-title">
+        Lịch sử phát âm
+        <button class="close-history-btn" id="close-history-btn">×</button>
+      </h3>
+    </div>
+    <div class="history-list" id="history-list">
+      <div class="empty-history" id="empty-history">Chưa có lịch sử phát âm. Tạo âm thanh để xem tại đây!</div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js">
+  </script>
+  <!-- Ensure main.js is loaded after all DOM elements -->
+  <script src="ocr.js"></script>
+  <script src="text_parser.js"></script>
+  <script src="main.js"></script>
+</body>
+
+</html>

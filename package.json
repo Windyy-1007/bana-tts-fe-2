@@ -1,0 +1,35 @@
+{
+  "name": "bahnar-tts-fe",
+  "version": "1.0.0",
+  "description": "Bahnar Text-to-Speech Frontend Application",
+  "main": "app.py",
+  "scripts": {
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "docker:restart": "docker-compose restart"
+  },
+  "dependencies": {
+    "tesseract.js": "^5.0.0",
+    "mammoth": "^1.6.0"
+  },
+  "keywords": [
+    "bahnar",
+    "text-to-speech",
+    "tts",
+    "ocr",
+    "flask",
+    "docker"
+  ],
+  "author": "Unlimited Research Group of AI, HCMUT",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/bahnar-tts-fe"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "python": ">=3.11.0"
+  }
+}
