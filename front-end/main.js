@@ -769,76 +769,77 @@ document.addEventListener('DOMContentLoaded', function () {
             const text = textInput.value.trim();
             const currentLang = langSelect ? langSelect.value : 'vi';
             const t = translations[currentLang];
-
             if (!text) {
                 ttsResult.textContent = t.errorEnterText;
                 ttsResult.className = 'error';
                 if (resultSection) resultSection.className = 'result-section error';
                 return;
             }
-
-            const voice = voiceSelect.value;
+            const gender = voiceSelect.value;
+            const region = selectedRegion;
             const originalButtonHTML = speakBtn.innerHTML;
-
-            // Show loading state
             speakBtn.disabled = true;
             speakBtn.innerHTML = '<span class="btn-spinner"></span>';
             ttsResult.innerHTML = `<span class="spinner"></span>   ${t.generatingSpeech}`;
             ttsResult.className = 'processing';
             if (resultSection) resultSection.className = 'result-section processing';
-
             try {
-                const res = await fetch('/speak', {
+                // Step 1: Call Bahnar API
+                const apiUrl = 'https://www.ura.hcmut.edu.vn/bahnar/nmt/api/translateBahnar/voice';
+                const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        text: text,
-                        region: selectedRegion,
-                        voice: voice
-                    })
+                    body: JSON.stringify({ text, gender, region })
                 });
-
-                if (!res.ok) {
-                    throw new Error(`HTTP error! status: ${res.status}`);
-                }
-
-                const data = await res.json();
-
-                if (data.speech) {
-                    // Save to history
-                    saveToHistory(text, selectedRegion, voice, data.speech);
-
-                    // Play audio
-                    const audio = new Audio('data:audio/wav;base64,' + data.speech);
-
+                const apiData = await response.json();
+                if (apiData.success && apiData.code === 200) {
+                    const payload = JSON.parse(apiData.payload || '{}');
+                    const urls = payload.urls || [];
+                    if (urls.length === 0) throw new Error(t.errorGeneratingSpeech);
+                    const audioUrl = urls[0];
+                    ttsResult.innerHTML = `<span class="spinner"></span>   ${t.loadingAudio}`;
+                    // Step 2: Poll for audio file
+                    let audioBlob = null;
+                    for (let attempt = 0; attempt < 30; attempt++) {
+                        const audioResp = await fetch(audioUrl);
+                        if (audioResp.status === 200) {
+                            audioBlob = await audioResp.blob();
+                            break;
+                        } else if (audioResp.status === 404) {
+                            await new Promise(res => setTimeout(res, 1000));
+                        } else {
+                            throw new Error(`${t.errorGeneratingSpeech} (${audioResp.status})`);
+                        }
+                    }
+                    if (!audioBlob) throw new Error(t.errorGeneratingSpeech);
+                    // Step 3: Play audio
+                    const audioUrlBase64 = URL.createObjectURL(audioBlob);
+                    const audio = new Audio(audioUrlBase64);
                     audio.onloadstart = function () {
                         ttsResult.innerHTML = `<span class="spinner"></span> ${t.loadingAudio}`;
                         ttsResult.className = 'processing';
                         if (resultSection) resultSection.className = 'result-section processing';
                     };
-
                     audio.oncanplay = function () {
-                        ttsResult.textContent = `${t.playingSpeech} (${selectedRegion.charAt(0).toUpperCase() + selectedRegion.slice(1)}, ${voice === 'male' ? t.voiceMale : t.voiceFemale})`;
+                        ttsResult.textContent = `${t.playingSpeech} (${region.charAt(0).toUpperCase() + region.slice(1)}, ${gender === 'male' ? t.voiceMale : t.voiceFemale})`;
                         ttsResult.className = 'success';
                         if (resultSection) resultSection.className = 'result-section success';
                     };
-
                     audio.onended = function () {
-                        ttsResult.textContent = `${t.speechCompleted} (${selectedRegion.charAt(0).toUpperCase() + selectedRegion.slice(1)}, ${voice === 'male' ? t.voiceMale : t.voiceFemale})`;
+                        ttsResult.textContent = `${t.speechCompleted} (${region.charAt(0).toUpperCase() + region.slice(1)}, ${gender === 'male' ? t.voiceMale : t.voiceFemale})`;
                         ttsResult.className = 'success';
                         if (resultSection) resultSection.className = 'result-section success';
                     };
-
                     audio.onerror = function () {
                         ttsResult.textContent = t.errorPlayingAudio;
                         ttsResult.className = 'error';
                         if (resultSection) resultSection.className = 'result-section error';
                     };
-
                     await audio.play();
-
+                    // Optionally save to history (audioData null, or convert to base64 if needed)
+                    saveToHistory(text, region, gender, null);
                 } else {
-                    ttsResult.textContent = data.error || t.errorGeneratingSpeech;
+                    ttsResult.textContent = apiData.error || t.errorGeneratingSpeech;
                     ttsResult.className = 'error';
                     if (resultSection) resultSection.className = 'result-section error';
                 }
