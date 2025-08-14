@@ -187,6 +187,7 @@ document.addEventListener('DOMContentLoaded', function () {
             guideTitle: 'Hướng dẫn gõ tiếng Bahnar',
             guideSpecialChars: 'Ký tự đặc biệt:',
             guideVietnameseChars: 'Ký tự tiếng Việt:',
+            guideCompoundChars: 'Ký tự phức hợp:',
             guideTips: 'Mẹo:',
             guideTip1: '• Viết hoa hay thường đều được cho ký tự thứ 2 (Uu → Ŭ)',
             guideTip2: '• Gõ lặp ký tự giống nhau để hủy (e66 → e6)',
@@ -243,6 +244,7 @@ document.addEventListener('DOMContentLoaded', function () {
             guideTitle: 'Bahnar Typing Guide',
             guideSpecialChars: 'Special Characters:',
             guideVietnameseChars: 'Vietnamese Characters:',
+            guideCompoundChars: 'Compound Characters:',
             guideTips: 'Tips:',
             guideTip1: "• Case doesn't matter for 2nd character (Uu → Ŭ)",
             guideTip2: '• Repeat same character to cancel (e66 → e6)',
@@ -376,7 +378,8 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelector('.guide-header h3').textContent = t.guideTitle;
         document.querySelector('.guide-content h4').textContent = t.guideSpecialChars;
         document.querySelectorAll('.guide-content h4')[1].textContent = t.guideVietnameseChars;
-        document.querySelectorAll('.guide-content h4')[2].textContent = t.guideTips;
+        document.querySelectorAll('.guide-content h4')[2].textContent = t.guideCompoundChars;
+        document.querySelectorAll('.guide-content h4')[3].textContent = t.guideTips;
 
         const tipsList = document.querySelector('.tips-list');
         tipsList.innerHTML = `
@@ -765,6 +768,22 @@ document.addEventListener('DOMContentLoaded', function () {
     const voiceSelect = document.getElementById('voice-select');
 
     // Bahnar typing auto-replace functionality
+    // 3-character replacement patterns (checked first)
+    const replacements3 = {
+        // ê̆ patterns (e with circumflex and breve)
+        'e68': 'ê̆', 'e86': 'ê̆', 'eew': 'ê̆', 'ewe': 'ê̆',
+        'E68': 'Ê̆', 'E86': 'Ê̆', 'EEW': 'Ê̆', 'EWE': 'Ê̆', 'Eew': 'Ê̆', 'eEw': 'Ê̆', 'eeW': 'Ê̆', 'Ewe': 'Ê̆', 'eWe': 'Ê̆', 'ewE': 'Ê̆',
+
+        // ô̆ patterns (o with circumflex and breve)
+        'o6\\': 'ô̆', 'o\\6': 'ô̆', 'oo\\': 'ô̆', 'o\\o': 'ô̆',
+        'O6\\': 'Ô̆', 'O\\6': 'Ô̆', 'OO\\': 'Ô̆', 'O\\O': 'Ô̆', 'Oo\\': 'Ô̆', 'oO\\': 'Ô̆', 'O\\o': 'Ô̆', 'o\\O': 'Ô̆',
+
+        // ư̆ patterns (u with horn and breve)
+        'u8\\': 'ư̆', 'u\\8': 'ư̆', 'uw\\': 'ư̆', 'u\\w': 'ư̆',
+        'U8\\': 'Ư̆', 'U\\8': 'Ư̆', 'UW\\': 'Ư̆', 'U\\W': 'Ư̆', 'Uw\\': 'Ư̆', 'uW\\': 'Ư̆', 'U\\w': 'Ư̆', 'u\\W': 'Ư̆'
+    };
+
+    // 2-character replacement patterns
     const replacements = {
         // u patterns
         'u8': 'ŭ', 'uu': 'ŭ', 'u\\': 'ŭ',
@@ -808,6 +827,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // o patterns (additional)
         'oo': 'ô', 'o6': 'ô',
         'OO': 'Ô', 'Oo': 'Ô', 'oO': 'Ô', 'O6': 'Ô',
+
         'ow': 'ơ', 'o7': 'ơ',
         'OW': 'Ơ', 'Ow': 'Ơ', 'oW': 'Ơ', 'O7': 'Ơ',
 
@@ -849,7 +869,15 @@ document.addEventListener('DOMContentLoaded', function () {
         'o77': 'o7', 'O77': 'O7',
         'oww': 'ow', 'OWW': 'OW', 'Oww': 'Ow',
         'u77': 'u7', 'U77': 'U7',
-        'uww': 'uw', 'UWW': 'UW', 'Uww': 'Uw'
+        'uww': 'uw', 'UWW': 'UW', 'Uww': 'Uw',
+
+        // New compound character cancellations
+        'e688': 'e68', 'e866': 'e86', 'E688': 'E68', 'E866': 'E86',
+        'eeww': 'eew', 'ewee': 'ewe', 'EEWW': 'EEW', 'EWEE': 'EWE',
+        'o6\\\\': 'o6\\', 'o\\66': 'o\\6', 'O6\\\\': 'O6\\', 'O\\66': 'O\\6',
+        'oo\\\\': 'oo\\', 'o\\oo': 'o\\o', 'OO\\\\': 'OO\\', 'O\\OO': 'O\\O',
+        'u8\\\\': 'u8\\', 'u\\88': 'u\\8', 'U8\\\\': 'U8\\', 'U\\88': 'U\\8',
+        'uw\\\\': 'uw\\', 'u\\ww': 'u\\w', 'UW\\\\': 'UW\\', 'U\\WW': 'U\\W'
     };
 
     function handleAutoReplace(event) {
@@ -857,13 +885,32 @@ document.addEventListener('DOMContentLoaded', function () {
         const cursorPos = textarea.selectionStart;
         const text = textarea.value;
 
-        // Check for cancellation patterns first (3 characters)
+        // Check for cancellation patterns first (4 characters)
+        if (cursorPos >= 4) {
+            const last4 = text.substring(cursorPos - 4, cursorPos);
+            if (cancellationPatterns[last4]) {
+                const newText = text.substring(0, cursorPos - 4) + cancellationPatterns[last4] + text.substring(cursorPos);
+                textarea.value = newText;
+                textarea.setSelectionRange(cursorPos - 1, cursorPos - 1);
+                return;
+            }
+        }
+
+        // Check for cancellation patterns (3 characters)
         if (cursorPos >= 3) {
             const last3 = text.substring(cursorPos - 3, cursorPos);
             if (cancellationPatterns[last3]) {
                 const newText = text.substring(0, cursorPos - 3) + cancellationPatterns[last3] + text.substring(cursorPos);
                 textarea.value = newText;
                 textarea.setSelectionRange(cursorPos - 1, cursorPos - 1);
+                return;
+            }
+
+            // Check for 3-character replacement patterns
+            if (replacements[last3]) {
+                const newText = text.substring(0, cursorPos - 3) + replacements[last3] + text.substring(cursorPos);
+                textarea.value = newText;
+                textarea.setSelectionRange(cursorPos - 2, cursorPos - 2);
                 return;
             }
         }
