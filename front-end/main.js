@@ -190,7 +190,7 @@ document.addEventListener('DOMContentLoaded', function () {
             guideCompoundChars: 'Ký tự phức hợp:',
             guideTips: 'Mẹo:',
             guideTip1: '• Viết hoa hay thường đều được cho ký tự thứ 2 (Uu → Ŭ)',
-            guideTip2: '• Gõ lặp ký tự giống nhau để hủy (e66 → e6)',
+            guideTip2: '• Gõ lặp ký tự giống nhau để hủy (e66 → e6, e688 → e68)',
             guideTip3: '• Gõ tự nhiên - thay thế tự động ngay lập tức',
             guideTip4: '• Tắt Unikey trên laptop/PC hoặc chuyển sang bàn phím tiếng Anh trên điện thoại',
             errorEnterText: 'Vui lòng nhập văn bản để chuyển đổi thành giọng nói.',
@@ -247,7 +247,7 @@ document.addEventListener('DOMContentLoaded', function () {
             guideCompoundChars: 'Compound Characters:',
             guideTips: 'Tips:',
             guideTip1: "• Case doesn't matter for 2nd character (Uu → Ŭ)",
-            guideTip2: '• Repeat same character to cancel (e66 → e6)',
+            guideTip2: '• Repeat same character to cancel (e66 → e6, e688 → e68)',
             guideTip3: '• Type naturally - replacement happens instantly',
             guideTip4: '• Turn off Unikey on laptop/PC or switch to English keyboard on phone',
             errorEnterText: 'Please enter text to convert to speech.',
@@ -907,8 +907,8 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             // Check for 3-character replacement patterns
-            if (replacements[last3]) {
-                const newText = text.substring(0, cursorPos - 3) + replacements[last3] + text.substring(cursorPos);
+            if (replacements3[last3]) {
+                const newText = text.substring(0, cursorPos - 3) + replacements3[last3] + text.substring(cursorPos);
                 textarea.value = newText;
                 textarea.setSelectionRange(cursorPos - 2, cursorPos - 2);
                 return;

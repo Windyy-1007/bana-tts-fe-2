@@ -1201,7 +1201,8 @@ body {
 
 .char-examples {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  max-width: calc(6 * 150px + 5 * 8px);
   gap: 8px;
   margin-bottom: 12px;
 }
@@ -1245,7 +1246,8 @@ body {
 /* Responsive adjustments for typing guide */
 @media (max-width: 768px) {
   .char-examples {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    max-width: calc(6 * 140px + 5 * 6px);
     gap: 6px;
   }
 
@@ -1278,7 +1280,8 @@ body {
   }
 
   .char-examples {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    max-width: calc(6 * 120px + 5 * 4px);
     gap: 4px;
   }
 
