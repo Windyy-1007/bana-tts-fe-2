@@ -1,6 +1,98 @@
 // main.js for navigation and TTS API call
 
 document.addEventListener('DOMContentLoaded', function () {
+    // Helper function to determine the correct API base URL
+    function getApiBaseUrl() {
+        // Always use relative URLs - nginx should handle the routing
+        return '';
+    }
+
+    // Helper function to make TTS API call with fallback options
+    async function callTTSAPI(text, gender, region) {
+        const currentLang = document.getElementById('lang-select')?.value || 'vi';
+        const t = translations[currentLang];
+
+        try {
+            // Try the Flask backend first
+            const apiBaseUrl = getApiBaseUrl();
+            const response = await fetch(`${apiBaseUrl}/speak`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    text: text, 
+                    gender: gender, 
+                    region: region 
+                })
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                if (result.speech) {
+                    return { success: true, audioData: result.speech };
+                } else {
+                    throw new Error(result.error || t.errorGeneratingSpeech);
+                }
+            } else {
+                throw new Error(`Backend returned ${response.status}`);
+            }
+        } catch (backendError) {
+            console.warn('Flask backend failed, trying direct API:', backendError);
+            
+            // Fallback: Try direct API call (will work on localhost due to CORS relaxation)
+            try {
+                const directResponse = await fetch('https://www.ura.hcmut.edu.vn/bahnar/nmt/api/translateBahnar/voice', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text, gender, region })
+                });
+                
+                const apiData = await directResponse.json();
+                if (apiData.success && apiData.code === 200) {
+                    const payload = JSON.parse(apiData.payload || '{}');
+                    const urls = payload.urls || [];
+                    if (urls.length === 0) throw new Error(t.errorGeneratingSpeech);
+                    
+                    const audioUrl = urls[0];
+                    
+                    // Poll for audio file
+                    for (let attempt = 0; attempt < 30; attempt++) {
+                        try {
+                            const audioResp = await fetch(audioUrl);
+                            if (audioResp.status === 200) {
+                                const audioBlob = await audioResp.blob();
+                                // Convert blob to base64
+                                const reader = new FileReader();
+                                const base64Data = await new Promise((resolve) => {
+                                    reader.onloadend = () => {
+                                        const base64 = reader.result.split(',')[1];
+                                        resolve(base64);
+                                    };
+                                    reader.readAsDataURL(audioBlob);
+                                });
+                                return { success: true, audioData: base64Data };
+                            } else if (audioResp.status === 404) {
+                                await new Promise(res => setTimeout(res, 1000));
+                            } else {
+                                throw new Error(`Audio fetch failed: ${audioResp.status}`);
+                            }
+                        } catch (audioError) {
+                            if (attempt === 29) throw audioError;
+                            await new Promise(res => setTimeout(res, 1000));
+                        }
+                    }
+                    throw new Error('Audio not available after timeout');
+                } else {
+                    throw new Error(apiData.error || t.errorGeneratingSpeech);
+                }
+            } catch (directError) {
+                console.error('Direct API also failed:', directError);
+                throw new Error(`Both backend and direct API failed. Backend: ${backendError.message}, Direct: ${directError.message}`);
+            }
+        }
+    }
+
     // Language switching system - moved to top so it's available everywhere
     const translations = {
         vi: {
@@ -784,64 +876,42 @@ document.addEventListener('DOMContentLoaded', function () {
             ttsResult.className = 'processing';
             if (resultSection) resultSection.className = 'result-section processing';
             try {
-                // Step 1: Call Bahnar API
-                const apiUrl = 'https://www.ura.hcmut.edu.vn/bahnar/nmt/api/translateBahnar/voice';
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text, gender, region })
-                });
-                const apiData = await response.json();
-                if (apiData.success && apiData.code === 200) {
-                    const payload = JSON.parse(apiData.payload || '{}');
-                    const urls = payload.urls || [];
-                    if (urls.length === 0) throw new Error(t.errorGeneratingSpeech);
-                    const audioUrl = urls[0];
-                    ttsResult.innerHTML = `<span class="spinner"></span>   ${t.loadingAudio}`;
-                    // Step 2: Poll for audio file
-                    let audioBlob = null;
-                    for (let attempt = 0; attempt < 30; attempt++) {
-                        const audioResp = await fetch(audioUrl);
-                        if (audioResp.status === 200) {
-                            audioBlob = await audioResp.blob();
-                            break;
-                        } else if (audioResp.status === 404) {
-                            await new Promise(res => setTimeout(res, 1000));
-                        } else {
-                            throw new Error(`${t.errorGeneratingSpeech} (${audioResp.status})`);
-                        }
-                    }
-                    if (!audioBlob) throw new Error(t.errorGeneratingSpeech);
-                    // Step 3: Play audio
-                    const audioUrlBase64 = URL.createObjectURL(audioBlob);
-                    const audio = new Audio(audioUrlBase64);
+                // Use the helper function that handles both backend and direct API calls
+                const result = await callTTSAPI(text, gender, region);
+                
+                if (result.success && result.audioData) {
+                    ttsResult.innerHTML = `<span class="spinner"></span> ${t.loadingAudio}`;
+                    
+                    const audio = new Audio('data:audio/wav;base64,' + result.audioData);
+                    
                     audio.onloadstart = function () {
                         ttsResult.innerHTML = `<span class="spinner"></span> ${t.loadingAudio}`;
                         ttsResult.className = 'processing';
                         if (resultSection) resultSection.className = 'result-section processing';
                     };
+                    
                     audio.oncanplay = function () {
                         ttsResult.textContent = `${t.playingSpeech} (${region.charAt(0).toUpperCase() + region.slice(1)}, ${gender === 'male' ? t.voiceMale : t.voiceFemale})`;
                         ttsResult.className = 'success';
                         if (resultSection) resultSection.className = 'result-section success';
                     };
+                    
                     audio.onended = function () {
                         ttsResult.textContent = `${t.speechCompleted} (${region.charAt(0).toUpperCase() + region.slice(1)}, ${gender === 'male' ? t.voiceMale : t.voiceFemale})`;
                         ttsResult.className = 'success';
                         if (resultSection) resultSection.className = 'result-section success';
                     };
+                    
                     audio.onerror = function () {
                         ttsResult.textContent = t.errorPlayingAudio;
                         ttsResult.className = 'error';
                         if (resultSection) resultSection.className = 'result-section error';
                     };
+                    
                     await audio.play();
-                    // Optionally save to history (audioData null, or convert to base64 if needed)
-                    saveToHistory(text, region, gender, null);
+                    saveToHistory(text, region, gender, result.audioData);
                 } else {
-                    ttsResult.textContent = apiData.error || t.errorGeneratingSpeech;
-                    ttsResult.className = 'error';
-                    if (resultSection) resultSection.className = 'result-section error';
+                    throw new Error(t.errorGeneratingSpeech);
                 }
             } catch (err) {
                 console.error('TTS Error:', err);
