@@ -13,3 +13,5 @@
 2025/08/14 04:25:21 [emerg] 1#1: upstream "bahnar_app" may not have port 5000 in /etc/nginx/nginx.conf:35
 2025/08/14 04:26:22 [emerg] 1#1: upstream "bahnar_app" may not have port 5000 in /etc/nginx/nginx.conf:35
 2025/08/14 04:27:22 [emerg] 1#1: upstream "bahnar_app" may not have port 5000 in /etc/nginx/nginx.conf:35
+2025/08/14 04:28:22 [emerg] 1#1: upstream "bahnar_app" may not have port 5000 in /etc/nginx/nginx.conf:35
+2025/08/14 04:29:22 [emerg] 1#1: upstream "bahnar_app" may not have port 5000 in /etc/nginx/nginx.conf:35
