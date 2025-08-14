@@ -10,11 +10,46 @@
   --color-sub: #e0e0e0;
 }
 
+/* Touch-friendly improvements for mobile */
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Allow text selection for input elements */
+input, textarea, [contenteditable] {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
 body {
   font-family: 'Tamoha', sans-serif;
   margin: 0;
   padding: 0 20px;
   background-color: var(--color-background);
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* Mobile-first responsive adjustments */
+@media (max-width: 480px) {
+  body {
+    padding: 0 10px;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+  
+  /* Improve text rendering on mobile */
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 }
 
 /* Headbar styles */
@@ -31,6 +66,22 @@ body {
   border-radius: 0 0 12px 12px;
 }
 
+/* Mobile headbar */
+@media (max-width: 480px) {
+  .headbar {
+    padding: 12px 16px;
+    font-size: 1rem;
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+  
+  #app-title {
+    font-size: 0.9rem;
+    line-height: 1.3;
+  }
+}
+
 .language-selector {
   background: #fff;
   color: var(--color-main-darker);
@@ -42,6 +93,16 @@ body {
   margin-left: 16px;
   box-shadow: 0 1px 4px rgba(27, 86, 253, 0.08);
   transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+/* Mobile language selector */
+@media (max-width: 480px) {
+  .language-selector {
+    margin-left: 0;
+    padding: 6px 12px;
+    font-size: 0.9rem;
+    width: 120px;
+  }
 }
 
 .language-selector:focus {
@@ -69,6 +130,16 @@ body {
   justify-content: space-between;
   margin: 16px 0;
   transition: all 0.3s ease;
+  flex-wrap: wrap;
+}
+
+/* Mobile navigator bar */
+@media (max-width: 480px) {
+  .navigator-bar {
+    gap: 8px;
+    margin: 12px 0;
+    justify-content: center;
+  }
 }
 
 .nav-btn {
@@ -82,6 +153,32 @@ body {
   cursor: pointer;
   transition: background 0.2s;
   width: 150px;
+  flex-shrink: 0;
+  touch-action: manipulation;
+  min-height: 44px;
+}
+
+/* Mobile nav buttons */
+@media (max-width: 768px) {
+  .nav-btn {
+    width: calc(50% - 4px);
+    padding: 10px 12px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-btn {
+    width: calc(50% - 4px);
+    padding: 8px 10px;
+    font-size: 0.85rem;
+    min-width: 120px;
+    min-height: 40px;
+  }
+  
+  .nav-btn:active {
+    transform: scale(0.95);
+  }
 }
 
 .nav-btn:hover {
@@ -123,6 +220,16 @@ body {
   transition: all 0.3s ease;
 }
 
+/* Mobile content sections */
+@media (max-width: 480px) {
+  #tts-content,
+  #ocr-content,
+  #file-content {
+    padding: 12px;
+    gap: 12px;
+  }
+}
+
 .card-title {
   font-size: 1.5rem;
   font-weight: 600;
@@ -142,6 +249,15 @@ body {
   transition: all 0.3s ease;
 }
 
+/* Mobile region selector */
+@media (max-width: 480px) {
+  .region-selector-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+
 .region-selector-label {
   font-size: 0.9rem;
   font-weight: 500;
@@ -156,6 +272,15 @@ body {
   border-radius: 8px;
   padding: 4px;
   gap: 2px;
+  flex-wrap: wrap;
+}
+
+/* Mobile region selector buttons */
+@media (max-width: 480px) {
+  .region-selector {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 .region-option {
@@ -168,6 +293,8 @@ body {
   font-weight: 500;
   color: #666;
   transition: all 0.2s ease;
+  touch-action: manipulation;
+  min-height: 36px;
 }
 
 .region-option:hover {
@@ -226,6 +353,16 @@ body {
   overflow-y: auto;
   cursor: text;
   caret-color: var(--color-main);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+@media (max-width: 480px) {
+  #text-input {
+    font-size: 16px; /* Prevent zoom on iOS */
+    -webkit-text-size-adjust: 100%;
+    touch-action: manipulation;
+  }
 }
 
 #text-input:focus {
@@ -395,6 +532,8 @@ body {
   align-items: center;
   gap: 6px;
   justify-content: center;
+  touch-action: manipulation;
+  min-height: 36px;
 }
 
 .tts-btn:hover:not(:disabled) {
@@ -412,6 +551,18 @@ body {
   opacity: 0.7;
   cursor: not-allowed;
   transform: none;
+}
+
+/* Mobile touch improvements for buttons */
+@media (max-width: 480px) {
+  .tts-btn:hover:not(:disabled) {
+    transform: none; /* Disable hover transform on mobile */
+  }
+  
+  .tts-btn:active {
+    transform: scale(0.95);
+    background: var(--color-main-darker);
+  }
 }
 
 /* Spinner for TTS button */
@@ -701,6 +852,7 @@ body {
 
   #text-input {
     padding-bottom: 16px;
+    min-height: 100px;
   }
 
   .result-section {
@@ -773,6 +925,210 @@ body {
   .history-action-btn svg {
     width: 12px;
     height: 12px;
+  }
+}
+
+/* Phone-specific responsive design */
+@media (max-width: 480px) {
+  /* Improve overall mobile UX */
+  html {
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+  }
+  
+  /* Better scrolling on iOS */
+  body {
+    -webkit-overflow-scrolling: touch;
+    overflow-x: hidden;
+  }
+
+  .text-input-controls {
+    padding: 0 8px;
+    gap: 4px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .text-input-controls > * {
+    width: 100%;
+    justify-content: center;
+  }
+
+  #text-input {
+    min-height: 80px;
+    padding: 12px;
+    font-size: 16px; /* Prevent iOS zoom */
+  }
+
+  .result-section {
+    min-height: 40px;
+  }
+
+  #tts-result,
+  #ocr-result,
+  #file-result {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    line-height: 1.3;
+  }
+
+  .region-option {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    flex: 1;
+    text-align: center;
+    min-height: 40px;
+  }
+
+  /* History panel for phones */
+  .history-panel {
+    width: 100%;
+    right: -100%;
+  }
+
+  .container.history-open {
+    margin-right: 0;
+    transform: translateX(-100%);
+  }
+
+  .history-panel-header {
+    padding: 15px;
+  }
+
+  .history-panel-title {
+    font-size: 1rem;
+  }
+
+  .history-list {
+    padding: 15px;
+  }
+
+  .history-item {
+    padding: 12px;
+    margin-bottom: 8px;
+  }
+
+  .history-item-text {
+    font-size: 0.85rem;
+    max-height: 45px;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+
+  .history-item-meta {
+    font-size: 0.7rem;
+    margin-bottom: 8px;
+  }
+
+  .history-item-actions {
+    gap: 6px;
+  }
+
+  .history-action-btn {
+    padding: 6px 8px;
+    font-size: 0.7rem;
+    min-width: 28px;
+    height: 26px;
+  }
+
+  /* Drop zone for phones */
+  .drop-zone {
+    padding: 15px 10px;
+    min-height: 80px;
+  }
+
+  .drop-zone-text {
+    font-size: 0.85rem;
+  }
+
+  .drop-zone-subtext {
+    font-size: 0.75rem;
+  }
+
+  .upload-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  /* Button sizing for phones */
+  .tts-btn {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    min-width: 60px;
+    gap: 4px;
+    min-height: 40px;
+  }
+
+  .tts-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .voice-selector {
+    padding: 6px 8px;
+    font-size: 0.8rem;
+    min-height: 36px;
+  }
+
+  .history-btn {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    min-height: 36px;
+  }
+
+  /* About section for phones */
+  .about-section {
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .about-section h3 {
+    font-size: 1.1rem;
+  }
+
+  .about-section p {
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  .mission-list li {
+    padding: 0.4rem 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  /* Combined input container for phones */
+  .combined-input-container {
+    border-width: 1px;
+    border-radius: 8px;
+  }
+
+  /* Card title for phones */
+  .card-title {
+    font-size: 1.2rem;
+    margin-bottom: 12px;
+  }
+  
+  /* Improve touch targets */
+  .close-history-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 1.8rem;
+  }
+  
+  .guide-toggle {
+    padding: 8px;
+    min-width: 40px;
+    min-height: 40px;
+  }
+  
+  /* Better visual feedback */
+  .nav-btn:active,
+  .region-option:active,
+  .tts-btn:active,
+  .history-btn:active {
+    transform: scale(0.95);
+    transition: transform 0.1s ease;
   }
 }
 
@@ -913,6 +1269,60 @@ body {
 
   .guide-content {
     padding: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .typing-guide {
+    margin-top: 12px;
+  }
+
+  .char-examples {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .char-group {
+    font-size: 0.75rem;
+    padding: 6px 8px;
+    justify-content: space-between;
+  }
+
+  .char {
+    font-size: 0.95rem;
+    margin-right: 8px;
+    min-width: 18px;
+  }
+
+  .tips-list li {
+    font-size: 0.75rem;
+    margin-bottom: 6px;
+  }
+
+  .guide-header {
+    padding: 8px 12px;
+  }
+
+  .guide-header h3 {
+    font-size: 0.9rem;
+  }
+
+  .guide-content {
+    padding: 10px 12px;
+  }
+
+  .guide-section {
+    margin-bottom: 12px;
+  }
+
+  .guide-section h4 {
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+  }
+
+  .guide-toggle {
+    padding: 4px 8px;
+    font-size: 0.75rem;
   }
 }
 

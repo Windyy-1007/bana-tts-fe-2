@@ -1,6 +1,58 @@
 // main.js for navigation and TTS API call
 
 document.addEventListener('DOMContentLoaded', function () {
+    // Mobile-friendly enhancements
+    function initMobileEnhancements() {
+        // Prevent zoom on input focus for iOS
+        const inputs = document.querySelectorAll('input, textarea, select');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                if (window.innerWidth <= 480) {
+                    document.querySelector('meta[name="viewport"]').setAttribute('content', 
+                        'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+                }
+            });
+            
+            input.addEventListener('blur', function() {
+                if (window.innerWidth <= 480) {
+                    document.querySelector('meta[name="viewport"]').setAttribute('content', 
+                        'width=device-width, initial-scale=1.0, user-scalable=no');
+                }
+            });
+        });
+
+        // Add touch feedback for buttons
+        const buttons = document.querySelectorAll('button, .nav-btn, .region-option');
+        buttons.forEach(button => {
+            button.addEventListener('touchstart', function() {
+                this.style.transform = 'scale(0.95)';
+            }, { passive: true });
+            
+            button.addEventListener('touchend', function() {
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+            }, { passive: true });
+            
+            button.addEventListener('touchcancel', function() {
+                this.style.transform = '';
+            }, { passive: true });
+        });
+
+        // Prevent double-tap zoom on buttons
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function (event) {
+            const now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+    }
+
+    // Initialize mobile enhancements
+    initMobileEnhancements();
+
     // Helper function to determine the correct API base URL
     function getApiBaseUrl() {
         // Always use relative URLs - nginx should handle the routing
